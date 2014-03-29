@@ -873,6 +873,34 @@ config ARCH_OMAP1
 	help
 	  Support for older TI OMAP1 (omap7xx, omap15xx or omap16xx)
 
+config ARCH_ZYNQ
+        bool "Xilinx Zynq ARM Cortex A9 Platform"
+	select CPU_V7
+	select GENERIC_TIME
+	select GENERIC_GPIO
+	select MEMORY
+	select CLKDEV_LOOKUP
+	select USE_OF
+	select COMMON_CLK
+        select ARM_AMBA
+        select ARM_GIC
+        select GENERIC_CLOCKEVENTS
+        select HAVE_ARM_SCU if SMP
+        select HAVE_ARM_TWD if SMP
+        select ICST
+        select MIGHT_HAVE_CACHE_L2X0
+        select HAVE_SMP
+        select CACHE_L2X0
+        select ARCH_REQUIRE_GPIOLIB
+        select ARCH_HAS_CPUFREQ
+        select ARCH_HAS_OPP
+        select MIGHT_HAVE_PCI
+        select CADENCE_TTC_TIMER
+        select GENERIC_ALLOCATOR
+        help
+         Support for Xilinx Zynq ARM Cortex A9 Platform
+
+
 endchoice
 
 menu "Multiple platform selection"
