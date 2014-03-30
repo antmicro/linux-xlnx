@@ -54,7 +54,6 @@ static int amp_start_second_cpu(uint32_t address)
 
 static int amp_stop_second_cpu(void)
 {
-
 	mutex_lock(&cpu_run_lock);
 	if(!amp_priv.running)
 	{
@@ -99,6 +98,12 @@ static ssize_t amp_write(struct file *file, const char __user *buffer, size_t le
 {
 	struct amp_private_data *priv = file->private_data;
 	uint32_t *buf;
+
+/*if second CPU is running we should not change it's program*/
+	if(priv->running) {
+		dev_err(priv->dev, "Changing program while CPU is runnig may cause undefined behaviour. Please stop the CPU before loading new program\n");
+		return -EBUSY;
+	}
 
 /* We are about to load program binary for the second CPU, as we cannot check if it is actually 
  * proper program, we check if it is aligned to 4 bytes although */
@@ -151,6 +156,7 @@ static long amp_ioctl(struct file *file, unsigned int ioctl_num, unsigned long i
                                 return -EINVAL;
 			}
                         priv->load_address = ioctl_data.data;
+			break;
 		case AMP_START:
 			amp_start_second_cpu(priv->start_address);
 			break;
@@ -189,6 +195,7 @@ static int amp_probe(struct platform_device *pdev) {
 	amp_priv.dev = &pdev->dev;
 	amp_priv.mm_start = res->start;
 	amp_priv.mm_end = res->end;
+	amp_priv.file_opened = false;
 
 	/* default entry point and load address for the second CPU is 0 */
 	amp_priv.start_address = 0;
@@ -205,6 +212,10 @@ static int amp_probe(struct platform_device *pdev) {
 		iounmap(amp_priv.mmio);
 		return -ENODEV;
 	}
+	
+	/* assume that second cpu is running and stop it */
+	amp_priv.running = true;
+	amp_stop_second_cpu();
 	return 0;
 }
 
