@@ -1,0 +1,2 @@
+# UAPI Header export list
+header-y += antmicro_amp.h
