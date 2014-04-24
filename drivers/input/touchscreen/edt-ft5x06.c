@@ -25,6 +25,8 @@
  *    http://www.glyn.com/Products/Displays
  */
 
+#define DEBUG
+
 #include <linux/module.h>
 #include <linux/ratelimit.h>
 #include <linux/interrupt.h>
@@ -1053,9 +1055,10 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client,
 	input_set_drvdata(input, tsdata);
 	i2c_set_clientdata(client, tsdata);
 
+	//XXX: (kgug - antmicro) Irq edge changed from IRQF_TRIGGER_FALLING to IRQF_TRIGGER_RISING
 	error = devm_request_threaded_irq(&client->dev, client->irq, NULL,
 					edt_ft5x06_ts_isr,
-					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
 					client->name, tsdata);
 	if (error) {
 		dev_err(&client->dev, "Unable to request touchscreen IRQ.\n");
