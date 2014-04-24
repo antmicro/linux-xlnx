@@ -89,12 +89,27 @@ static const struct sx150x_device_data sx150x_devices[] = {
 		.reg_reset    = 0x7d,
 		.ngpios       = 16
 	},
+	[2] = { /* sx1505 */
+		.reg_pullup   = 0x02,
+		.reg_pulldn   = 0x03,
+		.reg_drain    = 0x10,
+		.reg_polarity = 0x11,
+		.reg_dir      = 0x01,
+		.reg_data     = 0x00,
+		.reg_irq_mask = 0x05,
+		.reg_irq_src  = 0x08,
+		.reg_sense    = 0x06,
+		.reg_clock    = 0x12,
+		.reg_misc     = 0x13,
+		.reg_reset    = 0x14,
+		.ngpios       = 8
+	},
 };
 
 static const struct i2c_device_id sx150x_id[] = {
 	{"sx1508q", 0},
 	{"sx1509q", 1},
-	{}
+	{"sx1505", 2}
 };
 MODULE_DEVICE_TABLE(i2c, sx150x_id);
 
@@ -574,6 +589,49 @@ static void sx150x_remove_irq_chip(struct sx150x_chip *chip)
 	}
 }
 
+static int sx150x_get_ofdt_config(struct i2c_client *client)
+{
+	struct device_node *dn = client->dev.of_node;
+	struct sx150x_platform_data *pdata;
+	u32 const *prop;
+	int size;
+
+	client->dev.platform_data = devm_kzalloc(&client->dev, sizeof(struct sx150x_platform_data), GFP_KERNEL);
+	pdata = dev_get_platdata(&client->dev);
+	if(!pdata)
+		return -ENOMEM;
+
+	prop = of_get_property(dn, "gpio-base", &size);
+	if (prop)
+		pdata->gpio_base = (unsigned)be32_to_cpup(prop);
+	prop = of_get_property(dn, "oscio-is-gpo", &size);
+	if (prop)
+		pdata->oscio_is_gpo =  (*prop)?true:false;
+	prop = of_get_property(dn, "io-pullup-ena", &size);
+	if (prop)
+		pdata->io_pullup_ena = (u16)be32_to_cpup(prop);
+	prop = of_get_property (dn, "io-pulldn-ena", &size);
+	if (prop)
+		pdata->io_pulldn_ena = (u16)be32_to_cpup(prop);
+	prop = of_get_property (dn, "io-open-drain-ena", &size);
+	if(prop)
+		pdata->io_open_drain_ena = (u16)be32_to_cpup(prop);
+	prop = of_get_property (dn, "io-polarity", &size);
+	if(prop)
+		pdata->io_polarity = (u16)be32_to_cpup(prop);
+	prop = of_get_property (dn, "irq-summary", &size);
+	if(prop)
+		pdata->irq_summary = (int)be32_to_cpup(prop);
+	prop = of_get_property (dn, "irq-base", &size);
+	if(prop)
+		pdata->irq_base = (unsigned)be32_to_cpup(prop);
+	prop = of_get_property (dn, "reset-during-probe", &size);
+	if(prop)
+		pdata->reset_during_probe = (*prop)?true:false;
+
+	return 0;
+}
+
 static int sx150x_probe(struct i2c_client *client,
 				const struct i2c_device_id *id)
 {
@@ -583,10 +641,16 @@ static int sx150x_probe(struct i2c_client *client,
 	struct sx150x_chip *chip;
 	int rc;
 
+	/* if we have device tree node get platform data from it */
+	if (client->dev.of_node) {
+		rc = sx150x_get_ofdt_config(client);
+		if(rc)
+			return rc;
+	}
 	pdata = dev_get_platdata(&client->dev);
 	if (!pdata)
 		return -EINVAL;
-
+		
 	if (!i2c_check_functionality(client->adapter, i2c_funcs))
 		return -ENOSYS;
 
@@ -597,11 +661,11 @@ static int sx150x_probe(struct i2c_client *client,
 
 	sx150x_init_chip(chip, client, id->driver_data, pdata);
 	rc = sx150x_init_hw(chip, pdata);
-	if (rc < 0)
+	if (rc < 0) 
 		return rc;
 
 	rc = gpiochip_add(&chip->gpio_chip);
-	if (rc)
+	if (rc) 
 		return rc;
 
 	if (pdata->irq_summary >= 0) {
