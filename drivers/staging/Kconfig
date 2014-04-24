@@ -156,4 +156,6 @@ source "drivers/staging/apf/Kconfig"
 
 source "drivers/staging/pmods/Kconfig"
 
+source "drivers/staging/enclustra/Kconfig"
+
 endif # STAGING

@@ -70,3 +70,4 @@ obj-$(CONFIG_MTD_SPINAND_MT29F)	+= mt29f_spinand/
 obj-$(CONFIG_XILINX_VIDEO_IP)	+= video/axivdma/
 obj-$(CONFIG_XILINX_APF)	+= apf/
 obj-$(CONFIG_PMODS)		+= pmods/
+obj-$(CONFIG_ENCLUSTRA)         += enclustra/
