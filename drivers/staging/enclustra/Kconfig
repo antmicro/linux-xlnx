@@ -1,0 +1,36 @@
+menu "Enclustra"
+
+config ENCLUSTRA
+    bool "Enclustra Drivers"
+    default N
+    ---help---
+      Enable support for various drivers needed on the PS300 platform
+
+if ENCLUSTRA
+
+config ENCLUSTRA_FB
+    bool "Enclustra Framebuffer"
+    depends on FB 
+    select FB_CFB_FILLRECT
+    select FB_CFB_COPYAREA
+    select FB_CFB_IMAGEBLIT
+    help
+      Include support for the Enclustra TFT controler.
+      Supports currently only one resolution: 800x480
+      with 16bit color debth with 5:6:5 RGB
+
+config ENCLUSTRA_FB_DEBUG
+    bool "Debugging"
+    depends on ENCLUSTRA_FB 
+    help
+      This turns on debugging for the Enclustra Framebuffer
+      
+config ENCLUSTRA_FB_EMULATE
+    bool "Emulating"
+    depends on ENCLUSTRA_FB_DEBUG 
+    help
+      This turns on emulating for the Enclustra Framebuffer
+      
+endif # if ENCLUSTRA
+
+endmenu
