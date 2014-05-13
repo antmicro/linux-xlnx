@@ -271,13 +271,15 @@
 		};
 
 		ps7-sdio@e0100000 {
-			clock-frequency = <0x2faf080>;
+			clock-frequency = <0x1dcd650>;
 			clock-names = "clk_xin", "clk_ahb";
-			clocks = <0x2 0x15 0x2 0x20>;
+			clocks = <0x2 0x15>, <0x2 0x20>;
 			compatible = "arasan,sdhci-8.9a";
 			interrupt-parent = <0x3>;
 			interrupts = <0x0 0x18 0x4>;
 			reg = <0xe0100000 0x1000>;
+			broken-cd = <0x1>;
+			wp-inverted = <0x1>;
 			xlnx,has-cd = <0x1>;
 			xlnx,has-power = <0x0>;
 			xlnx,has-wp = <0x1>;
@@ -341,10 +343,11 @@
 			interrupts = <0x0 0x7 0x4>;
 			reg = <0xf8007100 0x20>;
 		};
+
 		tft@6C000000 {
-                         compatible = "enclustra,enclustra-fb";
-                         reg = <0x6C000000 0x10000>;
-                };
+			compatible = "enclustra,enclustra-fb";
+			reg = <0x6c000000 0x10000>;
+		};
 
 		ps7-i2c@e0004000 {
 			clock-frequency = <0x61a80>;
@@ -362,21 +365,22 @@
 				reg = <0x21>;
 				linux,phandle = <0x5>;
 				phandle = <0x5>;
-				gpio-base = <100>;
-				oscio-is-gpo = <0>;
-				io-pullup-ena = <0x00>;
-				io-pulldn-ena = <0x00>;
-				io-open-drain-ena = <0x00>;
-				io-polarity = <0x00>;
+				gpio-base = <0x64>;
+				oscio-is-gpo = <0x0>;
+				io-pullup-ena = <0x0>;
+				io-pulldn-ena = <0x0>;
+				io-open-drain-ena = <0x0>;
+				io-polarity = <0x0>;
 				irq-summary = <0xffffffff>;
 				irq-base = <0xffffffff>;
-				reset-during-probe = <0>;
+				reset-during-probe = <0x0>;
 			};
+
 			touch@38 {
 				compatible = "edt-ft5x06";
 				reg = <0x38>;
 				interrupt-parent = <0x3>;
-				interrupts = <0x0 0x3b 0x04>;
+				interrupts = <0x0 0x3b 0x4>;
 			};
 		};
 	};
