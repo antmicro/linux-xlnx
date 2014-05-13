@@ -130,11 +130,10 @@
 			mdio {
 				#address-cells = <0x1>;
 				#size-cells = <0x0>;
-
 				phy@3 {
 					compatible = "micrel,ksz9031";
 					device_type = "ethernet-phy";
-					reg = <0x0>;
+					reg = <0x3>;
 					linux,phandle = <0x4>;
 					phandle = <0x4>;
 				};
