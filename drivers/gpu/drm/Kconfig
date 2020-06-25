@@ -284,6 +284,8 @@ source "drivers/gpu/drm/pl111/Kconfig"
 
 source "drivers/gpu/drm/xlnx/Kconfig"
 
+source "drivers/gpu/drm/axi_dispctrl/Kconfig"
+
 # Keep legacy drivers last
 
 menuconfig DRM_LEGACY

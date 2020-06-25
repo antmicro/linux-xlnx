@@ -104,3 +104,4 @@ obj-$(CONFIG_DRM_MXSFB)	+= mxsfb/
 obj-$(CONFIG_DRM_TINYDRM) += tinydrm/
 obj-$(CONFIG_DRM_PL111) += pl111/
 obj-$(CONFIG_DRM_XLNX)	+= xlnx/
+obj-y           += axi_dispctrl/
